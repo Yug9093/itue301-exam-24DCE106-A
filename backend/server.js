@@ -1,5 +1,13 @@
 const express = require("express");
 const cors = require("cors");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+
+const Book = require("./models/Book");
+const Member = require("./models/Member");
+const Borrowing = require("./models/Borrowing");
+
+dotenv.config();
 
 const app = express();
 
@@ -9,29 +17,31 @@ const PORT = 5000;
 // Middleware
 // ================================
 
-// Enable CORS
 app.use(cors());
 
-// Parse JSON request bodies
 app.use(express.json());
 
-// Custom request logger middleware
+// ================================
+// Request Logger
+// ================================
+
 function requestLogger(req, res, next) {
   const timestamp = new Date().toISOString();
 
-  console.log(`[${req.method}] ${req.path} [${timestamp}]`);
+  console.log(
+    `[${req.method}] ${req.path} [${timestamp}]`
+  );
 
   next();
 }
 
-// Apply logger globally
 app.use(requestLogger);
 
 // ================================
-// In-memory data
+// In-memory data for Task 3/4
 // ================================
 
-let books = [
+const books = [
   {
     id: 1,
     title: "The Great Gatsby",
@@ -61,9 +71,10 @@ let books = [
 let borrowings = [];
 
 // ================================
-// GET /api/v1/books
+// TASK 3 APIs
 // ================================
 
+// GET all books
 app.get("/api/v1/books", (req, res) => {
   res.status(200).json({
     success: true,
@@ -72,10 +83,7 @@ app.get("/api/v1/books", (req, res) => {
   });
 });
 
-// ================================
-// GET /api/v1/borrowings
-// ================================
-
+// GET all borrowings
 app.get("/api/v1/borrowings", (req, res) => {
   res.status(200).json({
     success: true,
@@ -84,10 +92,7 @@ app.get("/api/v1/borrowings", (req, res) => {
   });
 });
 
-// ================================
-// POST /api/v1/borrowings
-// ================================
-
+// POST borrowing
 app.post("/api/v1/borrowings", (req, res, next) => {
   try {
     const {
@@ -98,7 +103,6 @@ app.post("/api/v1/borrowings", (req, res, next) => {
       status,
     } = req.body;
 
-    // Basic validation
     if (!memberId || !bookId || !borrowDate || !returnDate) {
       const error = new Error(
         "memberId, bookId, borrowDate and returnDate are required"
@@ -109,7 +113,6 @@ app.post("/api/v1/borrowings", (req, res, next) => {
       throw error;
     }
 
-    // Validate status
     const validStatuses = [
       "borrowed",
       "returned",
@@ -150,11 +153,105 @@ app.post("/api/v1/borrowings", (req, res, next) => {
 });
 
 // ================================
-// Global error handling middleware
+// TASK 5 MongoDB Test APIs
+// ================================
+
+// Create a book in MongoDB
+app.post("/api/v1/mongodb/books", async (req, res, next) => {
+  try {
+    const book = await Book.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: "Book created successfully",
+      data: book,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Create a member in MongoDB
+app.post("/api/v1/mongodb/members", async (req, res, next) => {
+  try {
+    const member = await Member.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: "Member created successfully",
+      data: member,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Create a borrowing record in MongoDB
+app.post(
+  "/api/v1/mongodb/borrowings",
+  async (req, res, next) => {
+    try {
+      const borrowing = await Borrowing.create(req.body);
+
+      res.status(201).json({
+        success: true,
+        message: "Borrowing record created successfully",
+        data: borrowing,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// Get MongoDB books
+app.get("/api/v1/mongodb/books", async (req, res, next) => {
+  try {
+    const books = await Book.find();
+
+    res.status(200).json({
+      success: true,
+      count: books.length,
+      data: books,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ================================
+// Global Error Handler
 // ================================
 
 app.use((err, req, res, next) => {
   console.error("Error:", err.message);
+
+  // Mongoose validation error
+  if (err.name === "ValidationError") {
+    const errors = {};
+
+    for (const field in err.errors) {
+      errors[field] = err.errors[field].message;
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: "Validation failed",
+      errors,
+    });
+  }
+
+  // Duplicate key error
+  if (err.code === 11000) {
+    const duplicateField = Object.keys(
+      err.keyValue || {}
+    )[0];
+
+    return res.status(400).json({
+      success: false,
+      message: `${duplicateField} already exists`,
+    });
+  }
 
   const statusCode = err.statusCode || 500;
 
@@ -165,9 +262,23 @@ app.use((err, req, res, next) => {
 });
 
 // ================================
-// Start server
+// MongoDB Connection
 // ================================
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected successfully");
+
+    app.listen(PORT, () => {
+      console.log(
+        `Server running on http://localhost:${PORT}`
+      );
+    });
+  })
+  .catch((error) => {
+    console.error(
+      "MongoDB connection failed:",
+      error.message
+    );
+  });
