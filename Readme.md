@@ -54,7 +54,7 @@ A full-stack web application for managing library books, members, and borrowings
 Create a `.env` file in the `backend` directory (or use `.env.example` as a reference):
 
 ```env
-MONGO_URI=mongodb://127.0.0.1:27017/libraryDB
+MONGO_URI=your_mongodb_connection_string
 ```
 
 - **`MONGO_URI`**: MongoDB connection string required for database connectivity.
