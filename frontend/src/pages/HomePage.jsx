@@ -1,6 +1,6 @@
 function HomePage() {
   return (
-    <div>
+    <div className="hero-card">
       <h1>Library Book Management System</h1>
 
       <p>

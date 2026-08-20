@@ -14,9 +14,9 @@ function BookCard({ title, author, category, available }) {
       <p>
         <strong>Availability:</strong>{" "}
         {available ? (
-          <span className="available">Available</span>
+          <span className="badge available">Available</span>
         ) : (
-          <span className="not-available">Not Available</span>
+          <span className="badge not-available">Not Available</span>
         )}
       </p>
     </div>

@@ -11,13 +11,13 @@ function App() {
     <div>
       <Navigation />
 
-      <hr />
-
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/books" element={<BooksPage />} />
-        <Route path="/borrow" element={<BorrowPage />} />
-      </Routes>
+      <main className="app-container">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/books" element={<BooksPage />} />
+          <Route path="/borrow" element={<BorrowPage />} />
+        </Routes>
+      </main>
     </div>
   );
 }

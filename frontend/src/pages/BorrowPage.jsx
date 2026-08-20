@@ -17,10 +17,8 @@ function BorrowPage() {
       <h1>Borrow Book</h1>
 
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Member Name:</label>
-          <br />
-
+        <div className="form-group">
+          <label>Member Name</label>
           <input
             type="text"
             value={memberName}
@@ -29,12 +27,8 @@ function BorrowPage() {
           />
         </div>
 
-        <br />
-
-        <div>
-          <label>Book Title:</label>
-          <br />
-
+        <div className="form-group">
+          <label>Book Title</label>
           <input
             type="text"
             value={bookTitle}
@@ -43,12 +37,8 @@ function BorrowPage() {
           />
         </div>
 
-        <br />
-
-        <div>
-          <label>Borrow Date:</label>
-          <br />
-
+        <div className="form-group">
+          <label>Borrow Date</label>
           <input
             type="date"
             value={borrowDate}
@@ -56,12 +46,8 @@ function BorrowPage() {
           />
         </div>
 
-        <br />
-
-        <div>
-          <label>Return Date:</label>
-          <br />
-
+        <div className="form-group">
+          <label>Return Date</label>
           <input
             type="date"
             value={returnDate}
@@ -69,32 +55,26 @@ function BorrowPage() {
           />
         </div>
 
-        <br />
-
         <button type="submit">
           Borrow Book
         </button>
       </form>
 
-      <hr />
-
       <h2>Current Form Data</h2>
-
-      <p>
-        <strong>Member:</strong> {memberName}
-      </p>
-
-      <p>
-        <strong>Book:</strong> {bookTitle}
-      </p>
-
-      <p>
-        <strong>Borrow Date:</strong> {borrowDate}
-      </p>
-
-      <p>
-        <strong>Return Date:</strong> {returnDate}
-      </p>
+      <div className="summary-card">
+        <p>
+          <strong>Member:</strong> {memberName || "—"}
+        </p>
+        <p>
+          <strong>Book:</strong> {bookTitle || "—"}
+        </p>
+        <p>
+          <strong>Borrow Date:</strong> {borrowDate || "—"}
+        </p>
+        <p>
+          <strong>Return Date:</strong> {returnDate || "—"}
+        </p>
+      </div>
     </div>
   );
 }

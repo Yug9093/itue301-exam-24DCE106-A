@@ -48,20 +48,22 @@ function BooksPage() {
 
   return (
     <div>
-      <h1>Books</h1>
+      <h1>Books Catalog</h1>
 
       {data.length === 0 ? (
         <p>No books found.</p>
       ) : (
-        data.map((book) => (
-          <BookCard
-            key={book.id}
-            title={book.title}
-            author={book.author}
-            category={book.category}
-            available={book.available}
-          />
-        ))
+        <div className="books-grid">
+          {data.map((book) => (
+            <BookCard
+              key={book.id}
+              title={book.title}
+              author={book.author}
+              category={book.category}
+              available={book.available}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

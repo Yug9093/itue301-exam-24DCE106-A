@@ -1,14 +1,21 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function Navigation() {
   return (
-    <nav>
-      <Link to="/">Home</Link>
-      {" | "}
-      <Link to="/books">Books</Link>
-      {" | "}
-      <Link to="/borrow">Borrow Book</Link>
-    </nav>
+    <header className="header-bar">
+      <h2 className="brand-title">📚 Library Portal</h2>
+      <nav>
+        <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
+          Home
+        </NavLink>
+        <NavLink to="/books" className={({ isActive }) => (isActive ? "active" : "")}>
+          Books
+        </NavLink>
+        <NavLink to="/borrow" className={({ isActive }) => (isActive ? "active" : "")}>
+          Borrow Book
+        </NavLink>
+      </nav>
+    </header>
   );
 }
 
