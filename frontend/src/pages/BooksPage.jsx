@@ -1,43 +1,68 @@
+import { useEffect, useState } from "react";
 import BookCard from "../components/BookCard";
 
 function BooksPage() {
-  const books = [
-    {
-      id: 1,
-      title: "The Great Gatsby",
-      author: "F. Scott Fitzgerald",
-      category: "Fiction",
-      available: true,
-    },
-    {
-      id: 2,
-      title: "Clean Code",
-      author: "Robert C. Martin",
-      category: "Programming",
-      available: false,
-    },
-    {
-      id: 3,
-      title: "Atomic Habits",
-      author: "James Clear",
-      category: "Self Help",
-      available: true,
-    },
-  ];
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchBooks() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch(
+          "http://localhost:5000/api/v1/books"
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch books");
+        }
+
+        const result = await response.json();
+
+        setData(result.data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchBooks();
+  }, []);
+
+  if (loading) {
+    return <h2>Loading books...</h2>;
+  }
+
+  if (error) {
+    return (
+      <div>
+        <h2>Error</h2>
+        <p>{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div>
       <h1>Books</h1>
 
-      {books.map((book) => (
-        <BookCard
-          key={book.id}
-          title={book.title}
-          author={book.author}
-          category={book.category}
-          available={book.available}
-        />
-      ))}
+      {data.length === 0 ? (
+        <p>No books found.</p>
+      ) : (
+        data.map((book) => (
+          <BookCard
+            key={book.id}
+            title={book.title}
+            author={book.author}
+            category={book.category}
+            available={book.available}
+          />
+        ))
+      )}
     </div>
   );
 }
